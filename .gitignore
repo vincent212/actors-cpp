@@ -1,0 +1,6 @@
+*.o
+*.a
+ping_pong
+
+src/libactors.a
+examples/ping_pong
