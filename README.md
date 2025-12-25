@@ -2,6 +2,20 @@
 
 A lightweight, high-performance actor framework for building concurrent systems in C++20.
 
+## Overview
+
+This is part of a **multi-language actor framework** spanning C++, Rust, and Python. All three implementations share a common JSON-over-ZMQ wire protocol, enabling seamless cross-language communication while leveraging each language's unique strengths.
+
+The C++ implementation is designed for scenarios where every microsecond matters—high-frequency trading, real-time systems, and performance-critical infrastructure.
+
+**When to use C++**: Financial trading systems, game engines, embedded real-time systems, or any application where you need deterministic latency and maximum throughput.
+
+For the full project documentation and blog post, see: https://m2te.ch/blog/opensource/actor-model
+
+**Related repositories:**
+- [actors-rust](https://github.com/anthropics/actors-rust) - Rust implementation (safety + performance)
+- [actors-py](https://github.com/anthropics/actors-py) - Python implementation (rapid prototyping)
+
 ## Features
 
 - **Actor Model**: Independent entities processing messages sequentially
@@ -140,32 +154,7 @@ g++ -std=c++20 -O2 -I../include ping_pong.cpp -L../src -lactors -lpthread -o pin
 - Boost (circular_buffer only)
 - pthreads
 
-## Files
 
-```
-include/actors/
-  Actor.hpp      - Base actor class
-  Message.hpp    - Message base class
-  Queue.hpp      - Queue interface
-  BQueue.hpp     - Blocking queue implementation
-  act/
-    Manager.hpp  - Actor lifecycle manager
-    Group.hpp    - Run actors in single thread
-    Timer.hpp    - Timer utility
-  msg/
-    Start.hpp    - Startup message
-    Shutdown.hpp - Shutdown message
-    Timeout.hpp  - Timer callback
-    Continue.hpp - Self-continuation message
-
-src/
-  Actor.cpp      - Actor implementation
-  Manager.cpp    - Manager implementation
-  Group.cpp      - Group implementation
-
-examples/
-  ping_pong.cpp  - Basic ping-pong example
-```
 
 ## License
 
