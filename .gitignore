@@ -4,3 +4,5 @@ ping_pong
 
 src/libactors.a
 examples/ping_pong
+examples/remote_pong
+examples/remote_ping

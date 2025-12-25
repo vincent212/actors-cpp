@@ -117,7 +117,7 @@ namespace actors
      * @param m Message to send (must be heap-allocated, Actor takes ownership)
      * @param sender The sending actor (for reply routing)
      */
-    void send(const Message *m, Actor *sender = nullptr) noexcept;
+    virtual void send(const Message *m, Actor *sender = nullptr) noexcept;
 
     /**
      * Send a message synchronously and wait for reply
