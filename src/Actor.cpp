@@ -46,6 +46,7 @@ https://opensource.org/licenses/MIT
 #include "actors/BQueue.hpp"
 #include "actors/msg/Shutdown.hpp"
 #include "actors/Actor.hpp"
+#include "actors/ActorRef.hpp"
 
 #include <unistd.h>
 #include <sys/syscall.h>
@@ -233,4 +234,9 @@ Actor* Actor::get_group() const
 {
   assert(is_part_of_group && "not part of group");
   return group;
+}
+
+// Stub for RemoteActorRef::send (ZMQ not implemented yet)
+void RemoteActorRef::send(const Message* /*m*/, Actor* /*sender*/) {
+  // TODO: Implement ZMQ send
 }

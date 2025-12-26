@@ -51,7 +51,7 @@ https://opensource.org/licenses/MIT
 #include <cassert>
 
 #define ACTOR_BQUEUE_SIZE 64
-#define ACTOR_HANDLER_CACHE_SIZE 512
+#define ACTOR_HANDLER_CACHE_SIZE 2048
 
 // Register a message handler for this actor
 // Usage: MESSAGE_HANDLER(MessageType, handler_method)

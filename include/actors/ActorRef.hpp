@@ -9,6 +9,7 @@ Copyright 2025 Vincent Maciejewski, & M2 Tech
 #pragma once
 
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <variant>
 #include "actors/Actor.hpp"
@@ -37,6 +38,28 @@ public:
 
     const char* name() const { return actor_->get_name(); }
     Actor* actor() const { return actor_; }
+};
+
+/**
+ * RustActorRef - Reference to a Rust actor via FFI
+ *
+ * Communicates via extern "C" functions (rust_actor_send).
+ * The send() implementation is in actors-interop.
+ */
+class RustActorRef {
+    std::string target_name_;
+    std::string sender_name_;
+
+public:
+    RustActorRef(std::string target, std::string sender = "")
+        : target_name_(std::move(target))
+        , sender_name_(std::move(sender)) {}
+
+    // Implemented in actors-interop (RustActorRef.cpp)
+    void send(const Message* m, Actor* sender = nullptr);
+
+    const std::string& name() const { return target_name_; }
+    const std::string& sender() const { return sender_name_; }
 };
 
 /**
@@ -77,15 +100,21 @@ public:
  *   remote_ref.send(new Ping{1}, this);  // remote - same syntax!
  */
 class ActorRef {
-    std::variant<LocalActorRef, RemoteActorRef> ref_;
+    std::variant<LocalActorRef, RemoteActorRef, RustActorRef> ref_;
 
 public:
+    // Default constructor - creates an empty/invalid ref
+    ActorRef() : ref_(LocalActorRef(nullptr)) {}
+
     // Construct from local actor
     explicit ActorRef(Actor* a) : ref_(LocalActorRef(a)) {}
 
     // Construct from remote actor
     ActorRef(std::string name, std::string endpoint, std::shared_ptr<ZmqSender> sender)
         : ref_(RemoteActorRef(std::move(name), std::move(endpoint), std::move(sender))) {}
+
+    // Construct from Rust actor
+    explicit ActorRef(RustActorRef rust_ref) : ref_(std::move(rust_ref)) {}
 
     // Copy/move constructors
     ActorRef(const ActorRef&) = default;
@@ -114,6 +143,17 @@ public:
 
     bool is_local() const { return std::holds_alternative<LocalActorRef>(ref_); }
     bool is_remote() const { return std::holds_alternative<RemoteActorRef>(ref_); }
+    bool is_rust() const { return std::holds_alternative<RustActorRef>(ref_); }
+
+    // Check if this is a valid (non-null) reference
+    bool is_valid() const {
+        if (auto* local = std::get_if<LocalActorRef>(&ref_)) {
+            return local->actor() != nullptr;
+        }
+        return true;  // Remote and Rust refs are always valid if constructed
+    }
+
+    explicit operator bool() const { return is_valid(); }
 
     // Get name (works for both local and remote)
     std::string name() const {
